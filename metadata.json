@@ -1,0 +1,5 @@
+{
+  "name": "BannerClone AI",
+  "description": "An AI-powered design tool that clones the style of reference banners and adapts them to your specific products using Gemini Nano Banana Pro.",
+  "requestFramePermissions": []
+}
