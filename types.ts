@@ -24,13 +24,13 @@ export const STYLES: DesignStyle[] = [
   'Sáng tạo phá cách'
 ];
 
-export type TypographyStyle = 
-  | 'Tự động' 
-  | 'Làm đẹp, thời trang, mềm mại' 
-  | 'Cách điệu, dễ thương' 
-  | 'Tươi trẻ, màu sắc' 
-  | 'Chuyên nghiệp, hiện đại' 
-  | 'Hoài cổ (Retro/Vintage)' 
+export type TypographyStyle =
+  | 'Tự động'
+  | 'Làm đẹp, thời trang, mềm mại'
+  | 'Cách điệu, dễ thương'
+  | 'Tươi trẻ, màu sắc'
+  | 'Chuyên nghiệp, hiện đại'
+  | 'Hoài cổ (Retro/Vintage)'
   | 'Mạnh mẽ, nổi bật';
 
 export const TYPOGRAPHY_STYLES: TypographyStyle[] = [
@@ -56,11 +56,12 @@ export interface LogoSettings {
 export interface GenerationSettings {
   theme: 'dark' | 'light';
   quantity: number;
-  aspectRatio: '1:1' | '3:4' | '4:3' | '16:9' | '9:16';
+  aspectRatio: '1:1' | '3:4' | '4:3' | '16:9' | '9:16' | '1:1.414';
   quality: '1K' | '2K' | '4K';
   typography: TypographyStyle;
   mode: GenerationMode;
   logo: LogoSettings;
+  addWhiteSpace: boolean;
 }
 
 export const DEFAULT_SETTINGS: GenerationSettings = {
@@ -76,5 +77,6 @@ export const DEFAULT_SETTINGS: GenerationSettings = {
     positionX: 5,
     positionY: 5,
     size: 20
-  }
+  },
+  addWhiteSpace: false
 };

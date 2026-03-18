@@ -14,12 +14,12 @@ const cleanBase64 = (base64: string): string => {
  * Extract Mime Type from base64 string
  */
 const getMimeType = (base64: string): string => {
-    const match = base64.match(/^data:(.*);base64,/);
-    if (match && match[1]) {
-        return match[1];
-    }
-    // Default fallback
-    return 'image/jpeg';
+  const match = base64.match(/^data:(.*);base64,/);
+  if (match && match[1]) {
+    return match[1];
+  }
+  // Default fallback
+  return 'image/jpeg';
 };
 
 // Mapping Vietnamese Typography categories to detailed English Design Prompts
@@ -52,41 +52,42 @@ export const generateBanner = async (
     const typoInstruction = TYPO_PROMPT_MAP[settings.typography] || TYPO_PROMPT_MAP['Tự động'];
 
     const promptText = `
-      ROLE: expert AI Graphic Designer and Copywriter.
-      TASK: Create a high-converting, visually stunning advertising banner.
+        ROLE: expert AI Graphic Designer and Copywriter.
+        TASK: Create a high-converting, visually stunning advertising banner.
 
-      INPUTS:
-      1. Reference Images (First ${referenceImages.length} images): These define the visual style, layout composition, color grading, and general vibe.
-      2. Product Assets (Subsequent images): These are the hero objects to feature.
+        INPUTS:
+        1. Reference Images (First ${referenceImages.length} images): These define the visual style, layout composition, color grading, and general vibe.
+        2. Product Assets (Subsequent images): These are the hero objects to feature.
 
-      CORE DIRECTIVES:
-      1. STYLE ADAPTATION (Visuals):
-         - Analyze the "vibe" of the reference images.
-         - Create a COMPLETELY NEW composition. Do not just copy pixels, steal the "look and feel".
-         - Ensure Product Assets are naturally integrated (match lighting, shadows, reflection, perspective).
+        CORE DIRECTIVES:
+        1. STYLE ADAPTATION (Visuals):
+           - Analyze the "vibe" of the reference images.
+           - Create a COMPLETELY NEW composition. Do not just copy pixels, steal the "look and feel".
+           - Ensure Product Assets are naturally integrated (match lighting, shadows, reflection, perspective).
 
-      2. INTELLIGENT COPYWRITING & TYPOGRAPHY:
-         - **Typography Directive:** ${typoInstruction}
-         - **Text Strategy:** ${promoInfo || brandDescription ? 'ADAPTIVE' : 'GENERATIVE'}.
-         - IF user provided info ("${promoInfo}", "${brandDescription}"):
-            - Select only the most impactful keywords. Do not clutter.
-            - Render the text using the Typography Style defined above.
-         - IF NO user info is provided:
-            - Create a catchy, short tagline based on the product.
-            - Example: "Cool for the Summer" for a drink.
-         - **Legibility:** Text must be artistic but readable. Follow visual hierarchy (Headline > Subtext).
+        2. INTELLIGENT COPYWRITING & TYPOGRAPHY:
+           - **Typography Directive:** ${typoInstruction}
+           - **Text Strategy:** ${promoInfo || brandDescription ? 'ADAPTIVE' : 'GENERATIVE'}.
+           - IF user provided info ("${promoInfo}", "${brandDescription}"):
+              - Select only the most impactful keywords. Do not clutter.
+              - Render the text using the Typography Style defined above.
+           - IF NO user info is provided:
+              - Create a catchy, short tagline based on the product.
+              - Example: "Cool for the Summer" for a drink.
+           - **Legibility:** Text must be artistic but readable. Follow visual hierarchy (Headline > Subtext).
 
-      3. COMPOSITION RULES:
-         - Prioritize visual aesthetics. Negative space is key.
-         - Design Style: Apply a "${style}" approach.
-         ${userPrompt ? `- User's Custom Wishlist: ${userPrompt}` : ''}
+        3. COMPOSITION RULES:
+           - Prioritize visual aesthetics. Negative space is key.
+           - Design Style: Apply a "${style}" approach.
+           ${settings.addWhiteSpace ? '- Print Safety Margin: IMPORTANT: Add significant blank white space (padding/margins) around the outer edges of the entire image to prevent important details from being cut off during printing.' : ''}
+           ${userPrompt ? `- User's Custom Wishlist: ${userPrompt}` : ''}
 
-      OUTPUT:
-      - A single, high-quality image containing the product and rendered text.
-    `;
+        OUTPUT:
+        - A single, high-quality image containing the product and rendered text.
+      `;
 
     const parts: any[] = [{ text: promptText }];
-    
+
     // Add all reference images
     referenceImages.forEach(ref => {
       parts.push({
@@ -114,8 +115,8 @@ export const generateBanner = async (
       },
       config: {
         imageConfig: {
-            aspectRatio: settings.aspectRatio,
-            imageSize: settings.quality
+          aspectRatio: settings.aspectRatio,
+          imageSize: settings.quality
         }
       }
     });
@@ -133,7 +134,7 @@ export const generateBanner = async (
   } catch (error: any) {
     console.error("Gemini API Error:", error);
     if (error.status === 'PERMISSION_DENIED' || error.code === 403) {
-        throw new Error("Permission Denied: Please select a paid API Key with access to Gemini 3 Pro models.");
+      throw new Error("Permission Denied: Please select a paid API Key with access to Gemini 3 Pro models.");
     }
     throw error;
   }
@@ -143,20 +144,20 @@ export const generateBanner = async (
  * Mode 2: Design from Info File
  */
 export const generateDesign = async (
-    referenceImages: string[],
-    infoFiles: string[],
-    brandDescription: string,
-    promoInfo: string,
-    userPrompt: string,
-    style: DesignStyle,
-    settings: GenerationSettings,
-    apiKey?: string
-  ): Promise<string> => {
-    try {
-      const ai = new GoogleGenAI({ apiKey: apiKey || process.env.API_KEY });
-      const typoInstruction = TYPO_PROMPT_MAP[settings.typography] || TYPO_PROMPT_MAP['Tự động'];
-  
-      const promptText = `
+  referenceImages: string[],
+  infoFiles: string[],
+  brandDescription: string,
+  promoInfo: string,
+  userPrompt: string,
+  style: DesignStyle,
+  settings: GenerationSettings,
+  apiKey?: string
+): Promise<string> => {
+  try {
+    const ai = new GoogleGenAI({ apiKey: apiKey || process.env.API_KEY });
+    const typoInstruction = TYPO_PROMPT_MAP[settings.typography] || TYPO_PROMPT_MAP['Tự động'];
+
+    const promptText = `
         ROLE: Expert AI Graphic Designer.
         TASK: Design a professional advertising banner by extracting content from an Information File and applying a specific Visual Style.
   
@@ -181,79 +182,80 @@ export const generateDesign = async (
            - **Typography Directive:** ${typoInstruction}
            - Ensure text is legible.
            - Create a balanced composition.
+           ${settings.addWhiteSpace ? '- Print Safety Margin: IMPORTANT: Add significant blank white space (padding/margins) around the outer edges of the entire image to prevent important details from being cut off during printing.' : ''}
            ${userPrompt ? `- User's Custom Wishlist: ${userPrompt}` : ''}
   
         OUTPUT:
         - A single, high-quality banner image that presents the extracted information in the requested style.
       `;
-  
-      const parts: any[] = [{ text: promptText }];
-      
-      // Add reference images
-      referenceImages.forEach(ref => {
-        parts.push({
-          inlineData: {
-            mimeType: getMimeType(ref),
-            data: cleanBase64(ref),
-          },
-        });
-      });
-  
-      // Add info files (PDF or Images)
-      infoFiles.forEach(file => {
-        parts.push({
-          inlineData: {
-            mimeType: getMimeType(file),
-            data: cleanBase64(file),
-          },
-        });
-      });
-  
-      const response = await ai.models.generateContent({
-        model: MODEL_NAME,
-        contents: {
-          parts: parts,
+
+    const parts: any[] = [{ text: promptText }];
+
+    // Add reference images
+    referenceImages.forEach(ref => {
+      parts.push({
+        inlineData: {
+          mimeType: getMimeType(ref),
+          data: cleanBase64(ref),
         },
-        config: {
-          imageConfig: {
-              aspectRatio: settings.aspectRatio,
-              imageSize: settings.quality
-          }
-        }
       });
-  
-      const candidates = response.candidates;
-      if (candidates && candidates.length > 0) {
-        for (const part of candidates[0].content.parts) {
-          if (part.inlineData && part.inlineData.data) {
-            return `data:image/png;base64,${part.inlineData.data}`;
-          }
+    });
+
+    // Add info files (PDF or Images)
+    infoFiles.forEach(file => {
+      parts.push({
+        inlineData: {
+          mimeType: getMimeType(file),
+          data: cleanBase64(file),
+        },
+      });
+    });
+
+    const response = await ai.models.generateContent({
+      model: MODEL_NAME,
+      contents: {
+        parts: parts,
+      },
+      config: {
+        imageConfig: {
+          aspectRatio: settings.aspectRatio,
+          imageSize: settings.quality
         }
       }
-  
-      throw new Error("No image data found in response");
-    } catch (error: any) {
-      console.error("Gemini API Error:", error);
-      if (error.status === 'PERMISSION_DENIED' || error.code === 403) {
-          throw new Error("Permission Denied: Please select a paid API Key with access to Gemini 3 Pro models.");
+    });
+
+    const candidates = response.candidates;
+    if (candidates && candidates.length > 0) {
+      for (const part of candidates[0].content.parts) {
+        if (part.inlineData && part.inlineData.data) {
+          return `data:image/png;base64,${part.inlineData.data}`;
+        }
       }
-      throw error;
     }
-  };
+
+    throw new Error("No image data found in response");
+  } catch (error: any) {
+    console.error("Gemini API Error:", error);
+    if (error.status === 'PERMISSION_DENIED' || error.code === 403) {
+      throw new Error("Permission Denied: Please select a paid API Key with access to Gemini 3 Pro models.");
+    }
+    throw error;
+  }
+};
 
 /**
  * Edit an existing banner based on a new prompt.
  */
 export const editBanner = async (
-    currentImageBase64: string,
-    editPrompt: string,
-    aspectRatio: string,
-    apiKey?: string
-  ): Promise<string> => {
-    try {
-      const ai = new GoogleGenAI({ apiKey: apiKey || process.env.API_KEY });
-  
-      const promptText = `
+  currentImageBase64: string,
+  editPrompt: string,
+  aspectRatio: string,
+  apiKey?: string
+): Promise<string> => {
+  try {
+    const ai = new GoogleGenAI({ apiKey: apiKey || process.env.API_KEY });
+
+    const promptText = `
         TASK: Edit the provided image based on the user's instruction.
         USER INSTRUCTION: "${editPrompt}"
         
@@ -263,43 +265,43 @@ export const editBanner = async (
         - Ensure typography remains legible if touched.
         - Return the full image.
       `;
-  
-      const response = await ai.models.generateContent({
-        model: MODEL_NAME,
-        contents: {
-          parts: [
-            { text: promptText },
-            {
-              inlineData: {
-                mimeType: 'image/png',
-                data: cleanBase64(currentImageBase64),
-              },
+
+    const response = await ai.models.generateContent({
+      model: MODEL_NAME,
+      contents: {
+        parts: [
+          { text: promptText },
+          {
+            inlineData: {
+              mimeType: 'image/png',
+              data: cleanBase64(currentImageBase64),
             },
-          ],
-        },
-        config: {
-            imageConfig: {
-                aspectRatio: aspectRatio as any, 
-                imageSize: '1K' 
-            }
-        }
-      });
-  
-      const candidates = response.candidates;
-      if (candidates && candidates.length > 0) {
-        for (const part of candidates[0].content.parts) {
-          if (part.inlineData && part.inlineData.data) {
-            return `data:image/png;base64,${part.inlineData.data}`;
-          }
+          },
+        ],
+      },
+      config: {
+        imageConfig: {
+          aspectRatio: aspectRatio as any,
+          imageSize: '1K'
         }
       }
-  
-      throw new Error("No image data found in response");
-    } catch (error: any) {
-      console.error("Gemini Edit API Error:", error);
-      if (error.status === 'PERMISSION_DENIED' || error.code === 403) {
-          throw new Error("Permission Denied: Please select a paid API Key with access to Gemini 3 Pro models.");
+    });
+
+    const candidates = response.candidates;
+    if (candidates && candidates.length > 0) {
+      for (const part of candidates[0].content.parts) {
+        if (part.inlineData && part.inlineData.data) {
+          return `data:image/png;base64,${part.inlineData.data}`;
+        }
       }
-      throw error;
     }
-  };
+
+    throw new Error("No image data found in response");
+  } catch (error: any) {
+    console.error("Gemini Edit API Error:", error);
+    if (error.status === 'PERMISSION_DENIED' || error.code === 403) {
+      throw new Error("Permission Denied: Please select a paid API Key with access to Gemini 3 Pro models.");
+    }
+    throw error;
+  }
+};
